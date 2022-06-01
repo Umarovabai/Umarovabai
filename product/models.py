@@ -38,7 +38,7 @@ class Category(models.Model):
 
 
 class Product(models.Model):
-    category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, primary_key=False, related_name='products', on_delete=models.CASCADE)
     image = models.ImageField(upload_to='products', blank=True, verbose_name='Картинки')
     name = models.CharField(max_length=150, verbose_name='Название')
     artikul = models.CharField(max_length=200, verbose_name='Артикул')
@@ -72,7 +72,7 @@ class ProductItem(models.Model):
 
 def validate_even(value):
     if value == 2:
-        raise ValidationError(_("%(value)s is not an even number"), params={'value': value})
+        raise ValidationError(("%(value)s is not an even number"), params={'value': value})
 
 class ProductItemImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_item_image')
