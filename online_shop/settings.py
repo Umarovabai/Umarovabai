@@ -38,7 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'djrichtextfield',
+    'ckeditor',
+    'ckeditor_uploader',
     'drf_yasg',
+    'rest_framework',
+    'colorfield',
 
     #myApp
     'product',
@@ -122,13 +127,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
-STATICFILES = [
-    os.path.join(BASE_DIR, 'shop/static')
-]
+STATIC_DIR = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [STATIC_DIR]
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

@@ -31,6 +31,6 @@ class SimilarProductSerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ('id', 'name', 'image')
+        fields = ('id', 'product', 'name', 'image')
 
 
