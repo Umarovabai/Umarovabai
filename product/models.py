@@ -1,6 +1,8 @@
+from ckeditor.fields import RichTextField
 from django.core.exceptions import ValidationError
 from django.db import models
-from pkg_resources import _
+from colorfield.fields import ColorField
+
 
 COLOR_PALETTE = [
     ('#FA0DF3', 'Purple',),
@@ -45,7 +47,7 @@ class Product(models.Model):
     price = models.IntegerField(default=True, null=True, blank=True, verbose_name='Цена')
     old_price = models.IntegerField(default=True, null=True, blank=True, verbose_name='Старая цена')
     discount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Скидки')
-    description = models.CharField(blank=True, max_length=1000, verbose_name='Описание')
+    description = RichTextField(verbose_name='Описание')
     size_range = models.CharField(max_length=100, verbose_name='Размерный ряд')
     composition = models.CharField(max_length=100, verbose_name='Состав ткани')
     stock = models.PositiveIntegerField(verbose_name='Количество в линейке')
@@ -64,10 +66,10 @@ class ProductItem(models.Model):
     size_range = models.CharField(max_length=100, null=True, blank=True, verbose_name='Размерный ряд')
     quantity_in_line = models.IntegerField(null=True, blank=True, verbose_name='Количество в линейке')
     Product_item = models.ForeignKey(Product, related_name='product_size', on_delete=models.CASCADE)
-    # rgbcolor = models.(choices=COLOR_PALETTE)
+    rgbcolor = ColorField(choices=COLOR_PALETTE)
 
-    # def __str__(self):
-    #     return self.rgbcolor
+    def __str__(self):
+        return self.rgbcolor
 
 
 def validate_even(value):
