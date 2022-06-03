@@ -2,15 +2,20 @@ from django.urls import include, path
 from rest_framework import routers
 from rest_framework.routers import SimpleRouter
 
-from product.views import CategoryAPIView, ProductAPIViewSet
+from product.views import CategoryListView, ProductViewSet, AboutUsApiView, SimilarProductAPIView, Help, \
+    OurAdvantagesAPIViewSet, PublicOfferAPIView
 
 router = routers.DefaultRouter()
-# router.register('product', ProductViewSet)
-# router.register('category', CategoryListView)
+router.register('product', ProductViewSet)
+router.register('Our', OurAdvantagesAPIViewSet, 'OurAdvantages')
 
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('api/v1/category/', CategoryAPIView.as_view()),
-    path('api/v1/', ProductAPIViewSet.as_view())
+    path('categories/', CategoryListView.as_view()),
+    path('about_as/', AboutUsApiView.as_view()),
+    path('Similar/<int:po>', SimilarProductAPIView.as_view()),
+    path('api/v4/AboutUs/', AboutUsApiView.as_view()),
+    path('api/v1/help/', Help),
+    path('api/v1/publicoffer/', PublicOfferAPIView.as_view())
 ]
