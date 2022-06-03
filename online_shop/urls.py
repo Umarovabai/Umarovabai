@@ -19,6 +19,13 @@ from django.contrib import admin
 from django.urls import path, include
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
+from rest_framework.routers import DefaultRouter
+
+from product.views import ProductViewSet
+
+router = DefaultRouter()
+router.register('product', ProductViewSet),
+
 
 schema_view = get_schema_view(
     openapi.Info(

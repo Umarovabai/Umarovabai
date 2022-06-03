@@ -2,8 +2,7 @@ from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from django import forms
 from django.contrib import admin
 
-from product.models import Category, Product, ProductItemImage, ProductItem
-
+from product.models import Category, Product, ProductItemImage, Help, About_us, OurAdvantages, ProductItem, PublicOffer
 
 
 class ProductAdminForm(forms.ModelForm):
@@ -19,7 +18,7 @@ class ProductItemImageInline(admin.TabularInline):
 
 class ProductItemInline(admin.StackedInline):
     model = ProductItem
-    fields = ['size_range', 'quantity_in_line', 'rgbcolor', 'Product_item']
+    fields = ['size_range', 'quantity_in_line', 'Product_item']
 
 admin.site.register(Product)
 class ProductAdmin(admin.ModelAdmin):
@@ -31,5 +30,10 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Category)
+admin.site.register(PublicOffer)
+admin.site.register(Help)
+admin.site.register(About_us)
+admin.site.register(OurAdvantages)
+
 
 
