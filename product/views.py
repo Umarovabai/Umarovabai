@@ -6,9 +6,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
-from product.models import Product, Category, About_us, Help, Help_image, OurAdvantages, PublicOffer
+from product.models import Product, Category, About_us, Help, OurAdvantages, PublicOffer, Help_image, News, Slider
 from product.serilaizers import SimilarProductSerializer, ProductSerializer, CategorySerializer, AboutUsSerializer, \
-    HelpSerializer, Help_imageSerializer, OurAdvantagesSerializer, PublicOfferSerializer
+    HelpSerializer, OurAdvantagesSerializer, PublicOfferSerializer, Help_imageSerializer, NewsSerializer, \
+    ListProductSerializer, SliderSerializers, NoveltiesListSerializer
 
 
 class ProductViewSet(ModelViewSet):
@@ -56,6 +57,76 @@ class OurAdvantagesAPIViewSet(viewsets.ModelViewSet):
 class PublicOfferAPIView(generics.ListAPIView):
     queryset = PublicOffer.objects.all()
     serializer_class = PublicOfferSerializer
+
+class NewsViewSet(ModelViewSet):
+    queryset = News.objects.all()
+    serializer_class = NewsSerializer
+class NewsViewSetPagination(PageNumberPagination):
+    page_size = 8
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+class ListProductViewSetPagination(PageNumberPagination):
+    page_size = 100
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+class ListProductAPIView(APIView):
+    def get(self, po):
+        movie = Product.objects.filter(category=po)
+        serializer = ListProductSerializer
+        pagination_class = ListProductViewSetPagination
+        return Response(serializer(movie, many=True).data)
+
+class NoveltiesListAPIView(generics.ListCreateAPIView):
+    queryset = Product.objects.filter(novelties=True)
+    serializer_class = NoveltiesListSerializer
+
+# Слайдер для главной страницы
+
+class SliderAPIViewSet(viewsets.ModelViewSet):
+    queryset = Slider.objects.all()
+    serializer_class = SliderSerializers
+
+class MainAPIViewsPagination(PageNumberPagination):  # Новинка для главной страницы
+    page_size = 8
+    page_size_query_param = 'page_size'
+    max_page_size = 1000
+
+class MainNoveltiesAPIViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.filter(novelties=True)[0:4]
+    serializer_class = NoveltiesListSerializer
+    pagination_class = MainAPIViewsPagination
+
+# Хит продаж список 8шт со статусом 'хит продаж'
+class BestsellerAPIViewsPagination(PageNumberPagination):
+    page_size = 8
+    page_size_query_param = 'page_size'
+    max_page_size = 10000
+
+class BestsellerAPIViewSet(viewsets.ModelViewSet):
+    queryset = Product.objects.filter(bestseller=True)[0:8]
+    serializer_class = NoveltiesListSerializer
+    pagination_class = BestsellerAPIViewsPagination
+
+class CollectionAPIViewsPagination(PageNumberPagination):
+    page_size = 8
+    page_size_query_param = 'page_size'
+    max_page_size = 10000
+
+
+class CollectionAPIViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()[0:4]
+    serializer_class = CategorySerializer
+    pagination_class = CollectionAPIViewsPagination
+
+
+# Наши приемущества список 4шт
+class OurAdvantagesAPIViewSet(viewsets.ModelViewSet):
+    queryset = OurAdvantages.objects.all()[0:4]
+    serializer_class = OurAdvantagesSerializer
+
+
 
 
 

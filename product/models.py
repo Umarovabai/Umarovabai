@@ -42,7 +42,6 @@ class Category(models.Model):
 class Product(models.Model):
     category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE, verbose_name='Категории')
     image = models.ImageField(upload_to='products', blank=True, verbose_name='Картинки')
-    rgbcolor = ColorField(choices=COLOR_PALETTE, verbose_name='Выбор цветов')
     name = models.CharField(max_length=150, verbose_name='Название')
     artikul = models.CharField(max_length=200, verbose_name='Артикул')
     price = models.IntegerField(default=True, null=True, verbose_name='Цена')
@@ -55,6 +54,8 @@ class Product(models.Model):
     material = models.CharField(max_length=100, verbose_name='Материал')
     bestseller = models.BooleanField(default=True, verbose_name='Хит продаж')
     novelties = models.BooleanField(default=True, verbose_name='Новинки')
+    favorites = models.BooleanField(default=False)
+
 
     class Meta:
         ordering = ['name']
@@ -70,9 +71,7 @@ class ProductItem(models.Model):
     Product_item = models.ForeignKey(Product, related_name='product_size', on_delete=models.CASCADE)
 
 
-    def __str__(self):
-        return self.rgbcolor
-
+#
 
 def validate_even(value):
     if value == 2:
@@ -81,8 +80,11 @@ def validate_even(value):
 class ProductItemImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_item_image')
     image = models.ImageField(upload_to='products', null=True, blank=True, validators=[validate_even])
+    rgbcolor = ColorField(choices=COLOR_PALETTE, verbose_name='Выбор цветов')
 
-list_about = []
+    class Meta:
+        verbose_name_plural = 'Картинка продукта'
+
 class About_us(SingletonModel):
     title = models.CharField(max_length=250, verbose_name='Заголовок')
     description = RichTextField(blank=True, verbose_name='Описание')
@@ -103,6 +105,7 @@ list_help = []
 class Help(models.Model):
     question = models.TextField(max_length=200, db_index=True, verbose_name='Вопросы')
     answer = models.TextField(max_length=200, db_index=True, verbose_name='Ответы')
+    image_help = models.ImageField(upload_to='products', blank=True, verbose_name='Картинки')
 
     class Meta:
         verbose_name_plural = 'Помощь'
@@ -143,6 +146,30 @@ class PublicOffer(SingletonModel):
 
     def __str__(self):
         return self.name
+
+
+class News(models.Model):
+    image_news = models.ImageField(upload_to='products', blank=True, verbose_name='Картинка')
+    header = models.CharField(max_length=200, blank=True, verbose_name='Заголовок')
+    description = RichTextField(blank=True, verbose_name='Описание')
+
+    class Meta:
+        verbose_name_plural = 'Новости'
+
+    def __str__(self):
+        return self.header
+
+class Slider(models.Model):
+    image = models.ImageField(upload_to='products', blank=True, verbose_name='Картинка')
+    link = models.URLField(max_length=150, null=True, blank=True, verbose_name='Ссылка')
+
+    class Meta:
+        verbose_name_plural = 'Слайдер'
+    def __str__(self):
+        return self.link
+
+
+
 
 
 

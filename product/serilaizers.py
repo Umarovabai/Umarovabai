@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
-from product.models import Product, Category, ProductItem, ProductItemImage, About_us, Help_image, Help, OurAdvantages, \
-    PublicOffer
+from product.models import Product, Category, ProductItemImage, About_us, Help, OurAdvantages, \
+    PublicOffer, ProductItem, Help_image, News, Slider
 
 
 class ProductItemSerializer(serializers.ModelSerializer):
@@ -19,7 +19,7 @@ class ProductSerializer(serializers.ModelSerializer):
         product_item_image = ProductItemImageSerializer(many=True, read_only=True)
         product_size = ProductItemSerializer(many=True, read_only=True)
         model = Product
-        fields = ('category', 'image', 'name', 'artikul', 'price', 'old_price', 'diskount',
+        fields = ('category', 'image', 'name', 'artikul', 'price', 'old_price', 'discount',
                   'description', 'size_range', 'composition', 'stock', 'material')
 
 class SimilarProductSerializer(serializers.ModelSerializer):
@@ -56,10 +56,34 @@ class OurAdvantagesSerializer(serializers.ModelSerializer):
         model = OurAdvantages
         fields = ('title', 'description', 'image')
 
-class PublicOfferSerializer(serializers.Serializer):
+class PublicOfferSerializer(serializers.ModelSerializer):
     class Meta:
         model = PublicOffer
         fields = '__all__'
+
+class NewsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = News
+        fields = '__all__'
+
+class ListProductSerializer(serializers.Serializer):
+    product_item_image = ProductItemImageSerializer(many=True, read_only=True)
+    product_size = ProductItemSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Product
+        fields = ('id', 'image', 'name', 'price', 'old_price', 'discount', 'size_range')
+
+class NoveltiesListSerializer(serializers.Serializer):
+    product_size = ProductItemSerializer(many=True, read_only=True)
+    class Meta:
+        model = Product
+        fields = ('id', 'image', 'name', 'price', 'old_price', 'discount', 'size_range')
+        
+class SliderSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Slider
+        fields = ('name', 'description', 'image')
 
 
 
