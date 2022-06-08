@@ -4,28 +4,7 @@ from django.db import models
 from colorfield.fields import ColorField
 from singleton_model import SingletonModel
 
-COLOR_PALETTE = [
-    ('#FA0DF3', 'Purple',),
-    ('#000000', 'Black',),
-    ('#141EFF', 'Blue',),
-    ('#FF0D22', 'Red',),
-    ('#00FF00', 'Green',),
-    ('#FA7819', 'Brown',),
-    ('#F7FA0A', 'Yellow',),
-    ('#FFFFFF', 'White',),
 
-]
-
-PRODUCT_COLORS = (
-    ('BLACK', 'Black'),
-    ('BLUE', 'Blue'),
-    ('RED', 'Red'),
-    ('BROWN', 'Brown'),
-    ('GREEN', 'Green'),
-    ('YELLOW', 'Yellow'),
-    ('WHITE', 'White'),
-    ('PURPLE', 'Purple'),
-)
 
 class Category(models.Model):
     name = models.CharField(max_length=100, verbose_name='Название')
@@ -84,7 +63,7 @@ def validate_even(value):
 class ProductItemImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_item_image')
     image = models.ImageField(upload_to='products', null=True, blank=True, validators=[validate_even])
-    rgbcolor = ColorField(choices=COLOR_PALETTE, verbose_name='Выбор цветов')
+    rgbcolor = ColorField(verbose_name='Выбор цветов')
 
     class Meta:
         verbose_name_plural = 'Картинка продукта'
@@ -164,13 +143,13 @@ class News(models.Model):
         return self.header
 
 class Slider(models.Model):
-    image = models.ImageField(upload_to='products', blank=True, verbose_name='Картинка')
+    image = models.ImageField(upload_to='products', blank=True, null=True, verbose_name='Картинка')
     link = models.URLField(max_length=150, null=True, blank=True, verbose_name='Ссылка')
 
     class Meta:
         verbose_name_plural = 'Слайдер'
-    def __str__(self):
-        return self.link
+    # def __str__(self):
+    #     return self.link
 
 
 class Footer(SingletonModel):
