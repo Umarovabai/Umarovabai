@@ -8,10 +8,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
-from product.models import Product, Category, About_us, Help, OurAdvantages, PublicOffer, Help_image, News, Slider, \
+from product.models import Product, Category, About_us, Help, OurAdvantages, PublicOffer, News, Slider, \
     Footer, FloatingButton
 from product.serilaizers import SimilarSerializer, ProductSerializer, CategorySerializer, AboutUsSerializer, \
-    HelpSerializer, OurAdvantagesSerializer, PublicOfferSerializer, Help_imageSerializer, NewsSerializer, \
+    HelpSerializer, OurAdvantagesSerializer, PublicOfferSerializer, NewsSerializer, \
     ListProductSerializer, SliderSerializers, NoveltiesListSerializer, FooterSerializer, FloatingButtonSerlializer
 
 
