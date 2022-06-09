@@ -39,7 +39,7 @@ class SimilarSerializer(serializers.ModelSerializer):
         fields = ('id', 'image', 'rgb_color', 'name', 'price', 'old_price', 'discount', 'size_range')
 
 
-class AboutUsSerializer(serializers.Serializer):
+class AboutUsSerializer(serializers.ModelSerializer):
     class Meta:
         model = About_us
         fields = '__all__'

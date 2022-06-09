@@ -23,9 +23,9 @@ class Product(models.Model):
     category = models.ForeignKey(Category, null=True, related_name='products', on_delete=models.CASCADE, verbose_name='Категории')
     name = models.CharField(max_length=150, verbose_name='Название')
     artikul = models.CharField(max_length=200, verbose_name='Артикул')
-    price = models.IntegerField(default=True, null=True,blank=True,  verbose_name='Цена')
+    price = models.IntegerField(default=True, null=True, blank=True, verbose_name='Цена')
     old_price = models.IntegerField(default=True, verbose_name='Старая цена')
-    discount = models.PositiveIntegerField(blank=True, null=True, verbose_name='Скидки')
+    discount = models.PositiveIntegerField(blank=True, null=True, default=0, verbose_name='Скидки')
     description = RichTextField(verbose_name='Описание')
     size_range = models.CharField(max_length=100, verbose_name='Размерный ряд')
     composition = models.CharField(max_length=100, verbose_name='Состав ткани')
@@ -78,10 +78,6 @@ class About_us(SingletonModel):
 
     def __str__(self):
         return self.title
-#
-# class about_us_image(SingletonModel):
-#     image = models.ImageField(upload_to='products', blank=True, verbose_name='Картинки')
-#     about = models.ForeignKey(About_us, on_delete=models.CASCADE, related_name='about')
 
 
 list_help = []
@@ -148,14 +144,12 @@ class Slider(models.Model):
 
     class Meta:
         verbose_name_plural = 'Слайдер'
-    # def __str__(self):
-    #     return self.link
 
 
 class Footer(SingletonModel):
     info = models.TextField(max_length=200, verbose_name='Информация')
-    header_image = models.ImageField(upload_to='products', blank=True, verbose_name='Логотип Футера')
-    footer_Image = models.ImageField(upload_to='products', blank=True, verbose_name='Логотип Хедера')
+    header_image = models.ImageField(upload_to='products', null=True, blank=True, verbose_name='Логотип Футера')
+    footer_Image = models.ImageField(upload_to='products', blank=True, null=True, verbose_name='Логотип Хедера')
     header_number = models.CharField(max_length=30, null=True, blank=True, verbose_name='Номер в хедере')
     number = models.CharField(max_length=30, blank=True, verbose_name='Ввод данных')
     instagram = models.CharField(max_length=100, null=True, blank=True, verbose_name='Инстаграм')
