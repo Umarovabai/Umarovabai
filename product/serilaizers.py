@@ -1,7 +1,14 @@
 from rest_framework import serializers
 
 from product.models import Product, Category, ProductItemImage, About_us, Help, OurAdvantages, \
-    PublicOffer, ProductItem, Help_image, News, Slider
+    PublicOffer, ProductItem, Help_image, News, Slider, Footer, FloatingButton
+
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ('id', 'name', 'image')
 
 
 class ProductItemSerializer(serializers.ModelSerializer):
@@ -15,28 +22,24 @@ class ProductItemImageSerializer(serializers.ModelSerializer):
         fields = ('image', )
 
 class ProductSerializer(serializers.ModelSerializer):
+    product_item_image = ProductItemImageSerializer(many=True, read_only=True)
+    category = CategorySerializer()
+
+    class Meta:
+
+        model = Product
+        fields = ('category', 'name', 'artikul', 'price', 'old_price', 'discount',
+                  'description', 'composition', 'stock', 'material', 'product_item_image')
+
+class SimilarSerializer(serializers.ModelSerializer):
     class Meta:
         product_item_image = ProductItemImageSerializer(many=True, read_only=True)
         product_size = ProductItemSerializer(many=True, read_only=True)
         model = Product
-        fields = ('category', 'image', 'name', 'artikul', 'price', 'old_price', 'discount',
-                  'description', 'size_range', 'composition', 'stock', 'material')
-
-class SimilarProductSerializer(serializers.ModelSerializer):
-    class Meta:
-        product_item_image = ProductItemImageSerializer(many=True, read_only=True)
-        product_size = ProductItemSerializer(many=True, read_only=True)
-        model = Product
-        fields = ('id', 'image', 'color', 'name', 'price', 'old_price', 'diskount', 'size')
+        fields = ('id', 'image', 'rgb_color', 'name', 'price', 'old_price', 'discount', 'size_range')
 
 
-class CategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Category
-        fields = ('id', 'products', 'name', 'image')
-
-
-class AboutUsSerializer(serializers.Serializer):
+class AboutUsSerializer(serializers.ModelSerializer):
     class Meta:
         model = About_us
         fields = '__all__'
@@ -83,9 +86,19 @@ class NoveltiesListSerializer(serializers.Serializer):
 class SliderSerializers(serializers.ModelSerializer):
     class Meta:
         model = Slider
-        fields = ('name', 'description', 'image')
+        fields = ('link', 'image')
 
+class FooterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Footer
+        fields = ('info', 'header_image', 'footer_Image',
+                  'header_number', 'instagram', 'mail',
+                  'whatsapp', 'num', 'telegram')
 
+class FloatingButtonSerlializer(serializers.ModelSerializer):
+    class Meta:
+        model = FloatingButton
+        fields = ('whatsapp', 'telegram')
 
 
 

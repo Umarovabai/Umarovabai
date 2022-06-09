@@ -4,32 +4,12 @@ from django.db import models
 from colorfield.fields import ColorField
 from singleton_model import SingletonModel
 
-COLOR_PALETTE = [
-    ('#FA0DF3', 'Purple',),
-    ('#000000', 'Black',),
-    ('#141EFF', 'Blue',),
-    ('#FF0D22', 'Red',),
-    ('#00FF00', 'Green',),
-    ('#FA7819', 'Brown',),
-    ('#F7FA0A', 'Yellow',),
-    ('#FFFFFF', 'White',),
 
-]
-
-PRODUCT_COLORS = (
-    ('BLACK', 'Black'),
-    ('BLUE', 'Blue'),
-    ('RED', 'Red'),
-    ('BROWN', 'Brown'),
-    ('GREEN', 'Green'),
-    ('YELLOW', 'Yellow'),
-    ('WHITE', 'White'),
-    ('PURPLE', 'Purple'),
-)
 
 class Category(models.Model):
     name = models.CharField(max_length=100, verbose_name='Название')
     image = models.ImageField(upload_to='products', blank=True, verbose_name="Картинка")
+
 
     class Meta:
         ordering = ['name']
@@ -40,22 +20,25 @@ class Category(models.Model):
 
 
 class Product(models.Model):
-    category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE, verbose_name='Категории')
-    image = models.ImageField(upload_to='products', blank=True, verbose_name='Картинки')
+    category = models.ForeignKey(Category, null=True, related_name='products', on_delete=models.CASCADE, verbose_name='Категории')
     name = models.CharField(max_length=150, verbose_name='Название')
     artikul = models.CharField(max_length=200, verbose_name='Артикул')
-    price = models.IntegerField(default=True, null=True, verbose_name='Цена')
-    old_price = models.IntegerField(default=True, null=True, verbose_name='Старая цена')
-    discount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Скидки')
+    price = models.IntegerField(default=True, null=True, blank=True, verbose_name='Цена')
+    old_price = models.IntegerField(default=True, verbose_name='Старая цена')
+    discount = models.PositiveIntegerField(blank=True, null=True, default=0, verbose_name='Скидки')
     description = RichTextField(verbose_name='Описание')
     size_range = models.CharField(max_length=100, verbose_name='Размерный ряд')
     composition = models.CharField(max_length=100, verbose_name='Состав ткани')
-    stock = models.PositiveIntegerField(verbose_name='Количество в линейке')
+    stock = models.PositiveIntegerField(null=True, verbose_name='Количество в линейке')
     material = models.CharField(max_length=100, verbose_name='Материал')
     bestseller = models.BooleanField(default=True, verbose_name='Хит продаж')
     novelties = models.BooleanField(default=True, verbose_name='Новинки')
     favorites = models.BooleanField(default=False)
 
+    def save(self, *args, **kwargs):
+        dis = self.old_price * self.discount / 100
+        self.price = self.old_price - dis
+        super(Product, self).save(*args, **kwargs)
 
     class Meta:
         ordering = ['name']
@@ -71,7 +54,7 @@ class ProductItem(models.Model):
     Product_item = models.ForeignKey(Product, related_name='product_size', on_delete=models.CASCADE)
 
 
-#
+
 
 def validate_even(value):
     if value == 2:
@@ -80,7 +63,7 @@ def validate_even(value):
 class ProductItemImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_item_image')
     image = models.ImageField(upload_to='products', null=True, blank=True, validators=[validate_even])
-    rgbcolor = ColorField(choices=COLOR_PALETTE, verbose_name='Выбор цветов')
+    rgbcolor = ColorField(verbose_name='Выбор цветов')
 
     class Meta:
         verbose_name_plural = 'Картинка продукта'
@@ -95,10 +78,6 @@ class About_us(SingletonModel):
 
     def __str__(self):
         return self.title
-#
-# class about_us_image(SingletonModel):
-#     image = models.ImageField(upload_to='products', blank=True, verbose_name='Картинки')
-#     about = models.ForeignKey(About_us, on_delete=models.CASCADE, related_name='about')
 
 
 list_help = []
@@ -160,20 +139,58 @@ class News(models.Model):
         return self.header
 
 class Slider(models.Model):
-    image = models.ImageField(upload_to='products', blank=True, verbose_name='Картинка')
+    image = models.ImageField(upload_to='products', blank=True, null=True, verbose_name='Картинка')
     link = models.URLField(max_length=150, null=True, blank=True, verbose_name='Ссылка')
 
     class Meta:
         verbose_name_plural = 'Слайдер'
+
+
+class Footer(SingletonModel):
+    info = models.TextField(max_length=200, verbose_name='Информация')
+    header_image = models.ImageField(upload_to='products', null=True, blank=True, verbose_name='Логотип Футера')
+    footer_Image = models.ImageField(upload_to='products', blank=True, null=True, verbose_name='Логотип Хедера')
+    header_number = models.CharField(max_length=30, null=True, blank=True, verbose_name='Номер в хедере')
+    number = models.CharField(max_length=30, blank=True, verbose_name='Ввод данных')
+    instagram = models.CharField(max_length=100, null=True, blank=True, verbose_name='Инстаграм')
+    whatsapp = models.CharField(max_length=30, null=True, blank=True, verbose_name='Ватсапп')
+    telegram = models.CharField(max_length=30, null=True, blank=True, verbose_name='Телеграм')
+    mail = models.CharField(max_length=50, null=True, blank=True, verbose_name='Почта')
+    num = models.CharField(max_length=30, null=True, blank=True, verbose_name='Номер')
+
+    def save(self, *args, **kwargs):
+        self.whatsapp = 'https://wa.me/'
+        self.telegram = 'https://t.me/'
+        self.instagram = 'https://www.instagram.com/'
+        self.mail = 'https://mail.doodle.com/'
+        self.number = '+996{self.number}'
+        super(Footer, self).save(*args, **kwargs)
+
+    class Meta:
+        verbose_name_plural = 'Футер и Хедер'
+
+
+class FloatingButton(models.Model):
+    whatsapp = models.CharField(max_length=30, null=True, blank=True, editable=False, verbose_name='Ватсапп')
+    telegram = models.CharField(max_length=30, null=True, blank=True, editable=False, verbose_name='Телеграм')
+    name = models.CharField(max_length=30, null=True, blank=True, verbose_name='Имя')
+    number = models.CharField(max_length=30, null=True, blank=True, verbose_name='Номер телефона')
+    type = models.CharField(max_length=30, null=True, blank=True, verbose_name='Тип обращения(обратный звонок)')
+    available = models.BooleanField(default=False, blank=True, null=True, verbose_name='Статус позвоноли')
+    created = models.DateTimeField(auto_now_add=True, blank=True, verbose_name='Дата создания')
+    updated = models.DateTimeField(auto_now=True, verbose_name='Дата обновления')
+
+    def save(self, *args, **kwargs):
+        self.whatsapp = f'https://wa.me/{self.whatsapp}/'
+        self.telegram = f'https://t.me/{self.telegram}/'
+
+        super(FloatingButton, self).save(*args, **kwargs)
+
     def __str__(self):
-        return self.link
+        return self.name
 
-
-
-
-
-
-
+    class Meta:
+        verbose_name_plural = 'Обратный звонок'
 
 
 

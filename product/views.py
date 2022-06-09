@@ -1,60 +1,61 @@
-from rest_framework import generics, viewsets, status
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import generics, viewsets, status, filters
 from rest_framework.decorators import api_view
+from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
-from product.models import Product, Category, About_us, Help, OurAdvantages, PublicOffer, Help_image, News, Slider
-from product.serilaizers import SimilarProductSerializer, ProductSerializer, CategorySerializer, AboutUsSerializer, \
-    HelpSerializer, OurAdvantagesSerializer, PublicOfferSerializer, Help_imageSerializer, NewsSerializer, \
-    ListProductSerializer, SliderSerializers, NoveltiesListSerializer
+from product.models import Product, Category, About_us, Help, OurAdvantages, PublicOffer, News, Slider, \
+    Footer, FloatingButton
+from product.serilaizers import SimilarSerializer, ProductSerializer, CategorySerializer, AboutUsSerializer, \
+    HelpSerializer, OurAdvantagesSerializer, PublicOfferSerializer, NewsSerializer, \
+    ListProductSerializer, SliderSerializers, NoveltiesListSerializer, FooterSerializer, FloatingButtonSerlializer
 
 
 class ProductViewSet(ModelViewSet):
-    queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    queryset = Product.objects.all().order_by('-id')
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filterset_fields = ['category', 'bestseller', 'novelties', 'favorites']
+    search_fields = ['category__name', 'name']
 
-class SimilarProductAPIView(APIView):
-    def get(self, po):
-        queryset = Product.objects.filter(category=po)
-        serializer = SimilarProductSerializer
-        return Response(serializer(queryset, many=True).data)
+
+class SimilarProductAPIViewSet(ModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class = SimilarSerializer
+
+    def get_queryset(self, *args, **kwargs):
+        request = Product.objects.filter()
+        serializer = SimilarSerializer
+        return serializer(request, many=True).data
 
 class CategoryAPIViewsPagination(PageNumberPagination):
     page_size = 8
     page_size_query_param = 'page_size'
     max_page_size = 100
 
-class CategoryListView(generics.ListAPIView):
+class CategoryListAPIViewSet(ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     pagination_class = CategoryAPIViewsPagination
     permission_classes = [IsAuthenticatedOrReadOnly, ]
 
-class AboutUsApiView(generics.ListAPIView):
+class AboutUsAPIViewSet(ModelViewSet):
     queryset = About_us.objects.all()
     serializer_class = AboutUsSerializer
 
-@api_view(['GET'])
-def Help():
-    help_que = Help.objects.all()
-    help_ser = HelpSerializer(help_que, many=True).data
-    help_image_que = Help_image.objects.all()
-    help_image_ser = Help_imageSerializer(help_image_que, many=True).data
-    return Response({
-        'Help': help_ser,
-        'image': help_image_ser
-    },
-        status=status.HTTP_200_OK)
-
+class HelpAPIViewSet(ModelViewSet):
+    queryset = Help.objects.all()
+    serializer_class = HelpSerializer
 
 class OurAdvantagesAPIViewSet(viewsets.ModelViewSet):
     queryset = OurAdvantages.objects.all()[0:4]
     serializer_class = OurAdvantagesSerializer
 
-class PublicOfferAPIView(generics.ListAPIView):
+class PublicOfferAPIViewSet(ModelViewSet):
     queryset = PublicOffer.objects.all()
     serializer_class = PublicOfferSerializer
 
@@ -78,8 +79,8 @@ class ListProductAPIView(APIView):
         pagination_class = ListProductViewSetPagination
         return Response(serializer(movie, many=True).data)
 
-class NoveltiesListAPIView(generics.ListCreateAPIView):
-    queryset = Product.objects.filter(novelties=True)
+class NoveltiesListAPIViewSet(ModelViewSet):
+    queryset = Product.objects.filter(id=True)
     serializer_class = NoveltiesListSerializer
 
 # Слайдер для главной страницы
@@ -94,7 +95,7 @@ class MainAPIViewsPagination(PageNumberPagination):  # Новинка для г�
     max_page_size = 1000
 
 class MainNoveltiesAPIViewSet(viewsets.ModelViewSet):
-    queryset = Category.objects.filter(novelties=True)[0:4]
+    queryset = Category.objects.filter(id=True)[0:4]
     serializer_class = NoveltiesListSerializer
     pagination_class = MainAPIViewsPagination
 
@@ -126,8 +127,13 @@ class OurAdvantagesAPIViewSet(viewsets.ModelViewSet):
     queryset = OurAdvantages.objects.all()[0:4]
     serializer_class = OurAdvantagesSerializer
 
+class FooterAPIViewSet(viewsets.ModelViewSet):
+    queryset = Footer.objects.all()
+    serializer_class = FooterSerializer
 
-
+class FloatingButtonAPIViewSet(ModelViewSet):
+    queryset = FloatingButton.objects.all()
+    serializer_class = FloatingButtonSerlializer
 
 
 
